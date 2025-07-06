@@ -9,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback.*;
