@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "math",
   "description": "Adds the ability to calculate mathematical expressions in game",
-  "authors": [],
+  "authors": ["kr1v"],
   "contact": {},
   "license": "MIT",
   "icon": "assets/math/icon.png",
@@ -12,18 +12,8 @@
   "entrypoints": {
     "client": [
       "org.kr1v.math.client.MathClient"
-    ],
-    "main": [
-      "org.kr1v.math.Math"
     ]
   },
-  "mixins": [
-    "math.mixins.json",
-    {
-      "config": "math.client.mixins.json",
-      "environment": "client"
-    }
-  ],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",

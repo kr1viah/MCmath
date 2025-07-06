@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback.*;
@@ -68,14 +69,11 @@ public class MathClient implements ClientModInitializer {
 		} catch (IllegalArgumentException e){
 			commandContext.getSource().sendFeedback(Text.literal(e.getMessage()));
 			return components;
-		} catch (Exception e) {
-			commandContext.getSource().sendFeedback(Text.literal("Something went wrong!"));
-			return components;
 		}
 		return components;
 	}
 
-	private String[] calculate(String[] components) throws Exception {
+	private String[] calculate(String[] components) {
 		double result = Double.parseDouble(reduceMathExpression(components)[0]);
 		String[] temp = new String[1];
 		if (Math.round(result) == result) {
@@ -86,7 +84,7 @@ public class MathClient implements ClientModInitializer {
 		return temp;
 	}
 
-	private String[] reduceMathExpression(String[] components) throws Exception {
+	private String[] reduceMathExpression(String[] components) {
 		if (components[0].equals("(")) {
 			components = removeAt(components, 0);
 			for (int i = 0; i < components.length; i++) {
@@ -105,23 +103,23 @@ public class MathClient implements ClientModInitializer {
 		int loops = 0;
 		while (!done) {
 			for (int i = 0; i < components.length; i++) {
-				System.out.println(Arrays.toString(components));
 				if (components[i].equals(")")) {
 					components = removeAt(components, i);
 					i = 0;
 					continue;
 				}
-				if (components[i+1].equals("s")) {
+				if (i != components.length -1 && components[i+1].equals("s")) {
 					double stacks = 0;
 					double left = 0;
+					boolean foundLeft = true;
 					try { stacks = Double.parseDouble(components[i]);
 					} catch (Exception ignored) {}
 
 					try { left = Double.parseDouble(components[i+2]);
-					} catch (Exception ignored) {}
+					} catch (Exception ignored) {foundLeft = false;}
 					components[i] = Double.toString(stacks*64 + left);
 					components = removeAt(components, i+1); // removes the s
-					components = removeAt(components, i+1); // removes left
+					if (foundLeft) components = removeAt(components, i+1); // removes left, if it exists
 					i = 0;
 					continue;
 				}
@@ -131,13 +129,15 @@ public class MathClient implements ClientModInitializer {
 						i = 0;
 						continue;
 					}
-					boolean hasExp = Arrays.asList(components).contains("^");
+					boolean hasStacks = Arrays.asList(components).contains("s");
+					if (hasStacks && (components[i].equals("*") || components[i].equals("+") || components[i].equals("-") || components[i].equals("/") || components[i].equals("^"))) continue;
 
+					boolean hasExp = Arrays.asList(components).contains("^");
 					if (hasExp && (components[i].equals("*") || components[i].equals("+") || components[i].equals("-") || components[i].equals("/"))) continue;
 
 					boolean hasMulOrDiv = Arrays.stream(components).anyMatch(s -> s.equals("*") || s.equals("/"));
-
 					if (hasMulOrDiv && (components[i].equals("+") || components[i].equals("-"))) continue;
+
 					double result = getResult(components, i);
 
 					if (components[i].equals("*") || components[i].equals("+") || components[i].equals("-") || components[i].equals("/") || components[i].equals("^")) {
@@ -150,9 +150,10 @@ public class MathClient implements ClientModInitializer {
 			if (components.length == 1) {
 				done = true;
 			}
-			if (loops > 10000) {
-				throw new Exception("Something went wrong!");
+			if (loops > 100000) {
+				throw new IllegalArgumentException("Something went wrong!");
 			}
+
 			loops++;
 		}
 		return components;
