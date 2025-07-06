@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "math",
+  "version": "${version}",
+  "name": "math",
+  "description": "Adds the ability to calculate mathematical expressions in game",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/math/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.kr1v.math.client.MathClient"
+    ],
+    "main": [
+      "org.kr1v.math.Math"
+    ]
+  },
+  "mixins": [
+    "math.mixins.json",
+    {
+      "config": "math.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
